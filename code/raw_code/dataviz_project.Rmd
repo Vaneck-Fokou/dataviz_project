@@ -22,7 +22,7 @@ library(ggthemes)
 library(knitr)
 
 ## set working directory
-knitr::opts_knit$set(root.dir = '/cloud/project')
+knitr::opts_knit$set(root.dir = '/cloud/project/dataviz_project')
 ```
 
 # Part 1: Exploratory Data Analysis
@@ -35,30 +35,38 @@ The data we'll be using for this part of the project were downloaded from [kaggl
 First, we'll read the data in from our `data/raw_data` directory.
 
 ```{r pet-data, warning=FALSE} 
-pets <- read.csv("data/raw_data/seattle_pet_licenses.csv", stringsAsFactors = FALSE)
+pets <- read.csv("data/raw_data/seattle_pet_licenses.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 ```
 
 ## Explore the Data
 
 ```{r pet-explore, warning=FALSE} 
-## Include code here to explore the data 
-## and answer the questions in the exercise
+##  explore the data 
+glimpse(pets)
 ```
+```{r}
+# number of unique animal's name
+
+length(unique(pets$animal_s_name))
+```
+
 
 ## Visualize the Data
 
 ```{r pet-barchart, warning=FALSE} 
 ## visual breakdown of how many of each species 
 ## are included in the dataset
-ggplot(DATASET) +
-  geom_bar(aes(x=VARIABLE))
+ggplot(pets) +
+  geom_bar(aes(x=species, fill = species)) + 
+  scale_fill_manual(values = c("magenta", "royalblue", "orange")) + 
+  theme_bw()
 ```
 
 ```{r pet-cat-table, warning=FALSE} 
 ## Table: Most frequent Cat Name 
-DATASET %>% 
-  filter(species == "SPECIES", VARIABLE != "") %>%
-  group_by(VARIABLE) %>% 
+pets %>% 
+  filter(species == "Cat", animal_s_name != "") %>%
+  group_by(animal_s_name) %>% 
   summarise(n = n()) %>% 
   arrange(-n) %>%
   top_n(n = 10) %>%
@@ -67,7 +75,13 @@ DATASET %>%
 
 ```{r pet-dog-table, warning=FALSE} 
 ## Table: Most frequent Dog Name
-## ADD CODE!
+pets %>% 
+  filter(species == "Dog", animal_s_name != "") %>%
+  group_by(animal_s_name) %>% 
+  summarise(n = n()) %>% 
+  arrange(-n) %>%
+  top_n(n = 10) %>%
+  knitr::kable(., caption = "Top 10 Dog Names in Seattle")
 ```
 
 ```{r pet-linechart, warning=FALSE} 
@@ -78,21 +92,58 @@ pets$ym <- as.yearmon(pets$date, "%y%m")
 ## how the number of licenses recorded has changed over time
 pets %>%
   ## group by yearmonth (`ym`)
-  function_name(VARIABLE) %>% 
+  group_by(ym) %>% 
   ## count number within each group
-  function_name(n=n()) %>%
-  ggplot(., aes(VARIABLE, n)) + 
+  summarise(n=n()) %>%
+  ggplot(., aes(ym, n)) + 
   ## geom name for line chart
-  geom_GEOM() +
+  geom_line(color = "red") +
   scale_x_yearmon() + 
   xlab("") + 
   ylab("Number of licenses")
 ```
 
 ```{r pet-plot, warning=FALSE} 
-### Explore the data -- create your own plot!
+### most frequent cat's primary breed 
 
+pets %>%
+  filter(species == "Cat", primary_breed != "") %>%
+  group_by(primary_breed) %>%
+  summarise(n = n()) %>%
+  arrange(-n) %>%
+  top_n(n = 10) %>%
+  knitr::kable(., caption = "Most frequent Cat's primary breed")
+
+### most frequent cat's secondary breed  
+pets %>%
+  filter(species == "Cat", secondary_breed != "") %>%
+  group_by(secondary_breed) %>%
+  summarise(n = n()) %>%
+  arrange(-n) %>%
+  top_n(n = 10) %>%
+  knitr::kable(., caption = "Most frequent Cat's secondary breed")
 ```
+
+```{r}
+# Most frequent Dog's primary breed
+pets %>%
+  filter(species == "Dog", primary_breed != "") %>%
+  group_by(primary_breed) %>%
+  summarise(n = n()) %>%
+  arrange(-n) %>%
+  top_n(n = 10) %>%
+  knitr::kable(., caption = "Most frequent dog's primary breed")
+
+# Most frequent Dog's secondary breed
+pets %>%
+  filter(species == "Dog", secondary_breed != "") %>%
+  group_by(secondary_breed) %>%
+  summarise(n = n()) %>%
+  arrange(-n) %>%
+  top_n(n = 10) %>%
+  knitr::kable(., caption = "Most frequent dog's secondary breed")
+```
+
 
 # Part 2: Explanatory Data Analysis
 
@@ -110,8 +161,9 @@ steak <- read.csv("data/raw_data/steak-risk-survey.csv", stringsAsFactors = FALS
 ## Explore the Data
 
 ```{r meat-explore, warning=FALSE} 
-## Include code here to explore the data 
-## and answer the questions in the exercise
+## Explore the data 
+glimpse(steak)
+head(steak)
 ```
 
 ## Wrangle the Data
