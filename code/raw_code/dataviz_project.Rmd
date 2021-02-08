@@ -265,14 +265,45 @@ ggsave(plot = p, filename = "figures/explanatory_figures/steak_R.png", width = 8
 
 ## Visualize the Data
 
-```{r meat-plot, warning=FALSE} 
-### Explore the data -- create your own plot!
+```{r}
+head(pets)
+```
 
+
+```{r meat-plot, warning=FALSE}
+## add date and ym columns
+#pets$date <- lubridate::ymd_hms(pets$license_issue_date)
+#pets$ym <- as.yearmon(pets$date, "%y%m")
+
+## how the number of licenses of cats and dogs recorded has changed over time
+g <- pets %>%
+  ## group by yearmonth (`ym`)
+  group_by(ym, species) %>% 
+  ## count number within each group
+  summarise(n=n()) %>%
+  ggplot(., aes(ym, n, color = species)) + 
+  ## geom name for line chart
+  geom_line() + 
+  scale_color_manual(values = c("orange", "brown", "red")) +
+  scale_x_yearqtr(limits = c(2012, 2017),
+                  format = "%Y", breaks=c(2012:2017), expand = c(0.1, 0.01)) + 
+  labs(title = "Number of licenses of cats and dogs ", subtitle = "In the Seattle Animal Shelter between 2012 and 2017", caption = "Seattle Animal Shelter") +
+  xlab("") + 
+  ylab("Number of licenses") + 
+  theme_minimal() + 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor.x = element_blank(), 
+        legend.position = "none") +
+  geom_dl(aes(label = species), 
+          method = list(c("last.points"),
+                        aes(colour = "black"), 
+                        cex = 0.65))
+g 
 ```
 
 ## Save this plot 
 
 ```{r save-meat-plot, warning=FALSE}
 ## save plot to figures/explanatory_figures directory
-ggsave(plot = OBJECT_NAME, filename = DIFFERENT_FILENAME)
+ggsave(plot = g, filename = "figures/explanatory_figures/pets_R.png")
 ```
