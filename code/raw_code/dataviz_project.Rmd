@@ -20,6 +20,7 @@ library(zoo)
 library(forcats)
 library(ggthemes)
 library(knitr)
+library(directlabels)
 
 ## set working directory
 knitr::opts_knit$set(root.dir = '/cloud/project/dataviz_project')
@@ -56,11 +57,18 @@ length(unique(pets$animal_s_name))
 ```{r pet-barchart, warning=FALSE} 
 ## visual breakdown of how many of each species 
 ## are included in the dataset
-ggplot(pets) +
+a <- ggplot(pets) +
   geom_bar(aes(x=species, fill = species)) + 
   scale_fill_manual(values = c("magenta", "royalblue", "orange")) + 
   theme_bw()
+a
 ```
+
+```{r}
+# save the figure
+ggsave(plot = a, filename = "figures/exploratory_figures/species.png")
+```
+
 
 ```{r pet-cat-table, warning=FALSE} 
 ## Table: Most frequent Cat Name 
@@ -90,7 +98,7 @@ pets$date <- lubridate::ymd_hms(pets$license_issue_date)
 pets$ym <- as.yearmon(pets$date, "%y%m")
 
 ## how the number of licenses recorded has changed over time
-pets %>%
+b <- pets %>%
   ## group by yearmonth (`ym`)
   group_by(ym) %>% 
   ## count number within each group
@@ -101,7 +109,15 @@ pets %>%
   scale_x_yearmon() + 
   xlab("") + 
   ylab("Number of licenses")
+b
 ```
+
+```{r}
+# saving the image 
+
+ggsave(plot = b, filename = "figures/exploratory_figures/total_licences.png")
+```
+
 
 ```{r pet-plot, warning=FALSE} 
 ### most frequent cat's primary breed 
