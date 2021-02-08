@@ -1,7 +1,7 @@
 ---
 title: "Data Visualization Project"
-author: "Jane Doe"
-date: "6/19/2018"
+author: "Vaneck Fokou"
+date: "08/02/2021"
 output: html_document
 ---
 
